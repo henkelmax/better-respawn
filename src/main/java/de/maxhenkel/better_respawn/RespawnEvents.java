@@ -7,6 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.FakePlayer;
@@ -18,6 +20,7 @@ import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Random;
 
 public class RespawnEvents {
@@ -33,7 +36,7 @@ public class RespawnEvents {
     }
 
     @SubscribeEvent
-    public void onRespawn(LivingDeathEvent event) {
+    public void onDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof PlayerEntity)) {
             return;
         }
@@ -42,6 +45,19 @@ public class RespawnEvents {
 
         if (!player.world.dimension.canRespawnHere()) {
             return;
+        }
+
+        BlockPos bedLocation = player.getBedLocation(player.dimension);
+
+        if (bedLocation != null) {
+            Optional<Vec3d> vec3d = player.func_213822_a(player.world, bedLocation, false);
+            if (vec3d.isPresent()) {
+                Vec3d spawn = vec3d.get();
+                if (player.getPosition().manhattanDistance(new Vec3i(spawn.x, spawn.y, spawn.z)) <= Config.SERVER.BED_RANGE.get()) {
+                    Main.LOGGER.debug("Player {} is within the range of its bed", player.getName().getUnformattedComponentText());
+                    return;
+                }
+            }
         }
 
         BlockPos respawnPos = findValidRespawnLocation(player.world, player.getPosition());
