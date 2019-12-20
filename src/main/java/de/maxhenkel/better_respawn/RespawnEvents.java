@@ -66,7 +66,7 @@ public class RespawnEvents {
             return;
         }
 
-        player.setSpawnPoint(respawnPos, true, player.dimension);
+        player.setSpawnPoint(respawnPos, true, false, player.dimension);
         Main.LOGGER.debug("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
     }
 
@@ -79,12 +79,12 @@ public class RespawnEvents {
         RespawnPosition respawnPosition = player.getCapability(Main.RESPAWN_CAPABILITY).orElse(null);
         DimensionType type = player.dimension;
         if (respawnPosition == null) {
-            player.setSpawnPoint(null, false, type);
+            player.setSpawnPoint(null, false, false, type);
             Main.LOGGER.error("Player {} has no respawn location capability", player.getName().getUnformattedComponentText());
             return;
         }
         BlockPos respawn = respawnPosition.getPos(type);
-        player.setSpawnPoint(respawn, false, type);
+        player.setSpawnPoint(respawn, false, false, type);
         if (respawn == null) {
             Main.LOGGER.debug("Setting the players respawn position back to world spawn");
         } else {
