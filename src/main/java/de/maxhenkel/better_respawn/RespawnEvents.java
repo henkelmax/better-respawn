@@ -5,12 +5,13 @@ import de.maxhenkel.better_respawn.capabilities.SpawnPointCapabilityProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.player.SpawnLocationHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -37,36 +38,37 @@ public class RespawnEvents {
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof PlayerEntity)) {
+        if (!(event.getEntity() instanceof ServerPlayerEntity)) {
             return;
         }
 
-        PlayerEntity player = (PlayerEntity) event.getEntity();
+        ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
 
-        if (!player.world.dimension.canRespawnHere()) {
+        // canRespawnHere
+        if (!player.getServerWorld().func_230315_m_().func_241510_j_()) {
             return;
         }
 
-        BlockPos bedLocation = player.getBedLocation(player.dimension);
+        BlockPos bedLocation = player.func_241140_K_();
 
         if (bedLocation != null) {
-            Optional<Vec3d> vec3d = player.func_213822_a(player.world, bedLocation, false);
+            Optional<Vector3d> vec3d = player.func_234567_a_(player.getServerWorld(), bedLocation, false, false);
             if (vec3d.isPresent()) {
-                Vec3d spawn = vec3d.get();
-                if (player.getPosition().manhattanDistance(new Vec3i(spawn.x, spawn.y, spawn.z)) <= Config.SERVER.BED_RANGE.get()) {
+                Vector3d spawn = vec3d.get();
+                if (player.func_233580_cy_().manhattanDistance(new Vector3i(spawn.x, spawn.y, spawn.z)) <= Main.SERVER_CONFIG.bedRange.get()) {
                     Main.LOGGER.debug("Player {} is within the range of its bed", player.getName().getUnformattedComponentText());
                     return;
                 }
             }
         }
 
-        BlockPos respawnPos = findValidRespawnLocation(player.world, player.getPosition());
+        BlockPos respawnPos = findValidRespawnLocation(player.getServerWorld(), player.func_233580_cy_());
 
         if (respawnPos == null) {
             return;
         }
 
-        player.setSpawnPoint(respawnPos, true, false, player.dimension);
+        player.func_241153_a_(player.world.func_234923_W_(), respawnPos, true, false);
         Main.LOGGER.debug("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
     }
 
@@ -77,14 +79,14 @@ public class RespawnEvents {
         }
         ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
         RespawnPosition respawnPosition = player.getCapability(Main.RESPAWN_CAPABILITY).orElse(null);
-        DimensionType type = player.dimension;
+
         if (respawnPosition == null) {
-            player.setSpawnPoint(null, false, false, type);
+            player.func_241153_a_(event.getWorld().func_234923_W_(), null, false, false);
             Main.LOGGER.error("Player {} has no respawn location capability", player.getName().getUnformattedComponentText());
             return;
         }
-        BlockPos respawn = respawnPosition.getPos(type);
-        player.setSpawnPoint(respawn, false, false, type);
+        BlockPos respawn = respawnPosition.getPos(event.getWorld());
+        player.func_241153_a_(event.getWorld().func_234923_W_(), respawn, false, false);
         if (respawn == null) {
             Main.LOGGER.debug("Setting the players respawn position back to world spawn");
         } else {
@@ -99,7 +101,7 @@ public class RespawnEvents {
         }
         BlockPos newSpawn = event.getNewSpawn();
         if (newSpawn != null) {
-            event.getPlayer().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition -> respawnPosition.setPos(event.getPlayer().dimension, newSpawn));
+            event.getPlayer().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition -> respawnPosition.setPos(event.getPlayer().world, newSpawn));
             Main.LOGGER.debug("Updating the respawn location of player {} to [{}, {}, {}]", event.getPlayer().getName().getUnformattedComponentText(), newSpawn.getX(), newSpawn.getY(), newSpawn.getZ());
         }
     }
@@ -128,14 +130,14 @@ public class RespawnEvents {
     }
 
     @Nullable
-    public BlockPos findValidRespawnLocation(World world, BlockPos deathLocation) {
-        int min = Config.SERVER.MIN_RESPAWN_DISTANCE.get();
-        int max = Config.SERVER.MAX_RESPAWN_DISTANCE.get();
+    public BlockPos findValidRespawnLocation(ServerWorld world, BlockPos deathLocation) {
+        int min = Main.SERVER_CONFIG.minRespawnDistance.get();
+        int max = Main.SERVER_CONFIG.maxRespawnDistance.get();
 
         BlockPos pos = null;
         for (int i = 0; i < FIND_SPAWN_ATTEMPTS && pos == null; i++) {
             Main.LOGGER.debug("Searching for respawn location - Attempt {}/{}", i + 1, FIND_SPAWN_ATTEMPTS);
-            pos = world.dimension.findSpawn(getRandomRange(deathLocation.getX(), min, max), getRandomRange(deathLocation.getZ(), min, max), true);
+            pos = SpawnLocationHelper.func_241094_a_(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))), true);
         }
         if (pos == null) {
             Main.LOGGER.debug("Found no valid respawn location after {} attempts", FIND_SPAWN_ATTEMPTS);
@@ -148,4 +150,5 @@ public class RespawnEvents {
     private int getRandomRange(int actual, int minDistance, int maxDistance) {
         return actual + (random.nextBoolean() ? -1 : 1) * (minDistance + random.nextInt(maxDistance - minDistance));
     }
+
 }

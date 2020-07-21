@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +21,12 @@ public class RespawnPosition {
         posmap = respawnPosition.posmap;
     }
 
-    public BlockPos getPos(DimensionType dimension) {
-        return posmap.get(dimension.getRegistryName());
+    public BlockPos getPos(World world) {
+        return posmap.get(world.func_234923_W_().func_240901_a_());
     }
 
-    public void setPos(DimensionType dimension, BlockPos pos) {
-        posmap.put(dimension.getRegistryName(), pos);
+    public void setPos(World world, BlockPos pos) {
+        posmap.put(world.func_234923_W_().func_240901_a_(), pos);
     }
 
     public CompoundNBT toNBT() {
@@ -57,4 +57,5 @@ public class RespawnPosition {
     public String toString() {
         return "RespawnPosition{" + posmap + "}";
     }
+
 }
