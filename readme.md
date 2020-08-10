@@ -1,4 +1,14 @@
-# Better Respawn
+# Better Respawn ![](http://cf.way2muchnoise.eu/full_340907_downloads.svg)
+![](http://cf.way2muchnoise.eu/versions/340907.svg)
+
+## Links
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/better-respawn)
+- [ModRepo](https://modrepo.de/minecraft/better_respawn/overview)
+- [GitHub](https://github.com/henkelmax/better-respawn)
+- [FAQ](https://modrepo.de/minecraft/better_respawn/faq)
+- [Credits](https://modrepo.de/minecraft/better_respawn/credits)
+
+---
 
 This mod adds a mechanic that lets you respawn near your death location.
 
