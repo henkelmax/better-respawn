@@ -1,15 +1,16 @@
 modLoader="javafml"
 loaderVersion="${mod_forge_version}"
-issueTrackerURL="https://www.curseforge.com/minecraft/mc-mods/better-respawn/issues"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/better-respawn"
-# logoFile="better_respawn.png"
-# credits=""
-authors="${mod_vendor}"
+license="All rights reserved"
+issueTrackerURL="https://github.com/henkelmax/better-respawn/issues"
 [[mods]]
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
 updateJSONURL="https://maxhenkel.de/update/better_respawn.json"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/better-respawn"
+# logoFile="better_respawn.png"
+# credits=""
+authors="${mod_vendor}"
 description='''This mod adds a mechanic that lets you respawn near your death location'''
 [[dependencies.${mod_id}]]
     modId="forge"
