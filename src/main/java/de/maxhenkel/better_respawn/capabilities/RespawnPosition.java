@@ -22,11 +22,11 @@ public class RespawnPosition {
     }
 
     public BlockPos getPos(World world) {
-        return posmap.get(world.func_234923_W_().func_240901_a_());
+        return posmap.get(world.getDimensionKey().getLocation());
     }
 
     public void setPos(World world, BlockPos pos) {
-        posmap.put(world.func_234923_W_().func_240901_a_(), pos);
+        posmap.put(world.getDimensionKey().getLocation(), pos);
     }
 
     public CompoundNBT toNBT() {
