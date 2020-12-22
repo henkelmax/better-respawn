@@ -1,5 +1,4 @@
-# Better Respawn ![](http://cf.way2muchnoise.eu/full_340907_downloads.svg)
-![](http://cf.way2muchnoise.eu/versions/340907.svg)
+# Better Respawn ![](http://cf.way2muchnoise.eu/full_340907_downloads.svg) ![](http://cf.way2muchnoise.eu/versions/340907.svg)
 
 ## Links
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/better-respawn)
@@ -12,12 +11,12 @@
 
 This mod adds a mechanic that lets you respawn near your death location.
 
-The minimum and maximum distance from your death location is configurable.
+## Features
 
-You will still respawn at your bed if you return from the end or if you die in another dimension.
-
-You will also respawn at your bed if you are within a certain distance of it.
-This distance is also configurable.
+- The minimum and maximum distance from your death location is configurable.
+- You will still respawn at your bed if you return from the end or if you die in another dimension.
+- You will also respawn at your bed/respawn anchor if you are within a certain distance of it (Configurable).
+- A configurable respawn cooldown (Off by default).
 
 
 ## Functionality

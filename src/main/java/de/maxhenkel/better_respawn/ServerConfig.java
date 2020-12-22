@@ -19,8 +19,8 @@ public class ServerConfig extends ConfigBase {
                 .comment("The minimum distance to spawn the player away from its death location")
                 .defineInRange("min_respawn_distance", 128, 0, 2048);
         bedRange = builder
-                .comment("If the player is in this range of its bed it will respawn there")
-                .defineInRange("bed_range", 256, 0, Integer.MAX_VALUE);
+                .comment("If the player is in this range of its bed/respawn anchor it will respawn there")
+                .defineInRange("bed_range", 256, 0, Integer.MAX_VALUE); //TODO rename
 
         respawnCooldown = builder
                 .comment("The time in ticks, the player needs to wait to respawn")
