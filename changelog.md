@@ -1,1 +1,1 @@
-- Added respawn cooldown
+- Fixed respawn location when logging out after death

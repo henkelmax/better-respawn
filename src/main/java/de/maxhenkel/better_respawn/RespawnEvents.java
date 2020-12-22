@@ -74,7 +74,7 @@ public class RespawnEvents {
 
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayerEntity)) {
+        if (!(event.getEntity() instanceof ServerPlayerEntity) || !event.getEntity().isAlive()) {
             return;
         }
         ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
