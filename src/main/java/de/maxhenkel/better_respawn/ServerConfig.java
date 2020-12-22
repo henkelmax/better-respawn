@@ -8,6 +8,7 @@ public class ServerConfig extends ConfigBase {
     public final ForgeConfigSpec.IntValue maxRespawnDistance;
     public final ForgeConfigSpec.IntValue minRespawnDistance;
     public final ForgeConfigSpec.IntValue bedRange;
+    public final ForgeConfigSpec.IntValue respawnCooldown;
 
     public ServerConfig(ForgeConfigSpec.Builder builder) {
         super(builder);
@@ -20,6 +21,10 @@ public class ServerConfig extends ConfigBase {
         bedRange = builder
                 .comment("If the player is in this range of its bed it will respawn there")
                 .defineInRange("bed_range", 256, 0, Integer.MAX_VALUE);
+
+        respawnCooldown = builder
+                .comment("The time in ticks, the player needs to wait to respawn")
+                .defineInRange("respawn_cooldown", 0, 0, Integer.MAX_VALUE);
     }
 
 }
