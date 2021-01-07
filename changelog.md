@@ -1,1 +1,1 @@
-- Fixed respawn location when logging out after death
+- Added russian translation
