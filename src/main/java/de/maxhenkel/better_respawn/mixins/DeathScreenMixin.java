@@ -18,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DeathScreenMixin extends Screen {
 
     @Shadow
-    protected ITextComponent field_243285_p;
+    protected ITextComponent deathScore;
 
     @Shadow
-    private int enableButtonsTimer;
+    private int delayTicker;
 
     protected Button respawnButton;
 
@@ -37,25 +37,25 @@ public class DeathScreenMixin extends Screen {
         delay = Main.SERVER_CONFIG.respawnCooldown.get() <= 20 ? 0 : -1;
     }
 
-    @Inject(method = "confirmCallback", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "confirmResult", at = @At("HEAD"), cancellable = true)
     public void confirmCallback(boolean disconnect, CallbackInfo ci) {
         if (disconnect) {
             return;
         }
         ci.cancel();
-        minecraft.displayGuiScreen(this);
+        minecraft.setScreen(this);
     }
 
     @Inject(method = "tick", at = @At("RETURN"), cancellable = true)
     public void tick(CallbackInfo ci) {
         if (delay > 0) {
-            field_243285_p = new TranslationTextComponent("message.better_respawn.respawn_timer", (delay + 19) / 20);
+            deathScore = new TranslationTextComponent("message.better_respawn.respawn_timer", (delay + 19) / 20);
         } else if (delay < 0) {
-            field_243285_p = new StringTextComponent("");
+            deathScore = new StringTextComponent("");
         } else {
-            field_243285_p = (new TranslationTextComponent("deathScreen.score")).appendString(": ").append((new StringTextComponent(Integer.toString(minecraft.player.getScore()))).mergeStyle(TextFormatting.YELLOW));
+            deathScore = (new TranslationTextComponent("deathScreen.score")).append(": ").append((new StringTextComponent(Integer.toString(minecraft.player.getScore()))).withStyle(TextFormatting.YELLOW));
         }
-        respawnButton.active = delay <= 0 && enableButtonsTimer >= 20;
+        respawnButton.active = delay <= 0 && delayTicker >= 20;
         if (delay > 0) {
             delay--;
         }

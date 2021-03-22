@@ -45,30 +45,30 @@ public class RespawnEvents {
         ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
 
         // canRespawnHere
-        if (!player.getServerWorld().getDimensionType().doesBedWork()) {
+        if (!player.getLevel().dimensionType().bedWorks()) {
             return;
         }
 
-        BlockPos bedLocation = player.func_241140_K_();
+        BlockPos bedLocation = player.getRespawnPosition();
 
         if (bedLocation != null) {
-            Optional<Vector3d> vec3d = PlayerEntity.func_242374_a(player.getServerWorld(), bedLocation, 0F, false, false);
+            Optional<Vector3d> vec3d = PlayerEntity.findRespawnPositionAndUseSpawnBlock(player.getLevel(), bedLocation, 0F, false, false);
             if (vec3d.isPresent()) {
                 Vector3d spawn = vec3d.get();
-                if (player.getPosition().manhattanDistance(new Vector3i(spawn.x, spawn.y, spawn.z)) <= Main.SERVER_CONFIG.bedRange.get()) {
-                    Main.LOGGER.debug("Player {} is within the range of its bed", player.getName().getUnformattedComponentText());
+                if (player.blockPosition().distManhattan(new Vector3i(spawn.x, spawn.y, spawn.z)) <= Main.SERVER_CONFIG.bedRange.get()) {
+                    Main.LOGGER.debug("Player {} is within the range of its bed", player.getName().getContents());
                     return;
                 }
             }
         }
 
-        BlockPos respawnPos = findValidRespawnLocation(player.getServerWorld(), player.getPosition());
+        BlockPos respawnPos = findValidRespawnLocation(player.getLevel(), player.blockPosition());
 
         if (respawnPos == null) {
             return;
         }
 
-        player.func_242111_a(player.world.getDimensionKey(), respawnPos, 0F, true, false);
+        player.setRespawnPosition(player.level.dimension(), respawnPos, 0F, true, false);
         Main.LOGGER.debug("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
     }
 
@@ -81,12 +81,12 @@ public class RespawnEvents {
         RespawnPosition respawnPosition = player.getCapability(Main.RESPAWN_CAPABILITY).orElse(null);
 
         if (respawnPosition == null) {
-            player.func_242111_a(event.getWorld().getDimensionKey(), null, 0F, false, false);
-            Main.LOGGER.error("Player {} has no respawn location capability", player.getName().getUnformattedComponentText());
+            player.setRespawnPosition(event.getWorld().dimension(), null, 0F, false, false);
+            Main.LOGGER.error("Player {} has no respawn location capability", player.getName().getContents());
             return;
         }
         BlockPos respawn = respawnPosition.getPos(event.getWorld());
-        player.func_242111_a(event.getWorld().getDimensionKey(), respawn, 0F, false, false);
+        player.setRespawnPosition(event.getWorld().dimension(), respawn, 0F, false, false);
         if (respawn == null) {
             Main.LOGGER.debug("Setting the players respawn position back to world spawn");
         } else {
@@ -101,8 +101,8 @@ public class RespawnEvents {
         }
         BlockPos newSpawn = event.getNewSpawn();
         if (newSpawn != null) {
-            event.getPlayer().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition -> respawnPosition.setPos(event.getPlayer().world, newSpawn));
-            Main.LOGGER.debug("Updating the respawn location of player {} to [{}, {}, {}]", event.getPlayer().getName().getUnformattedComponentText(), newSpawn.getX(), newSpawn.getY(), newSpawn.getZ());
+            event.getPlayer().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition -> respawnPosition.setPos(event.getPlayer().level, newSpawn));
+            Main.LOGGER.debug("Updating the respawn location of player {} to [{}, {}, {}]", event.getPlayer().getName().getContents(), newSpawn.getX(), newSpawn.getY(), newSpawn.getZ());
         }
     }
 
@@ -114,7 +114,7 @@ public class RespawnEvents {
         event.getOriginal().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition -> {
             event.getPlayer().getCapability(Main.RESPAWN_CAPABILITY).ifPresent(respawnPosition1 -> {
                 respawnPosition1.copyFrom(respawnPosition);
-                Main.LOGGER.debug("Copying respawn location capability of player {}", event.getPlayer().getName().getUnformattedComponentText());
+                Main.LOGGER.debug("Copying respawn location capability of player {}", event.getPlayer().getName().getContents());
             });
         });
     }
@@ -137,7 +137,7 @@ public class RespawnEvents {
         BlockPos pos = null;
         for (int i = 0; i < FIND_SPAWN_ATTEMPTS && pos == null; i++) {
             Main.LOGGER.debug("Searching for respawn location - Attempt {}/{}", i + 1, FIND_SPAWN_ATTEMPTS);
-            pos = SpawnLocationHelper.func_241094_a_(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))), true);
+            pos = SpawnLocationHelper.getSpawnPosInChunk(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))), true);
         }
         if (pos == null) {
             Main.LOGGER.debug("Found no valid respawn location after {} attempts", FIND_SPAWN_ATTEMPTS);

@@ -29,7 +29,7 @@ public class MessageRespawnDelay implements Message {
 
     @Override
     public void executeClientSide(NetworkEvent.Context context) {
-        Screen s = Minecraft.getInstance().currentScreen;
+        Screen s = Minecraft.getInstance().screen;
         if (s instanceof DeathScreen) {
             try {
                 Method setDelay = s.getClass().getDeclaredMethod("setDelay", int.class);

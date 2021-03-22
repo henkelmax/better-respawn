@@ -16,9 +16,9 @@ public class ServerPlayNetHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Inject(method = "processClientStatus", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleClientCommand", at = @At("HEAD"), cancellable = true)
     public void processClientStatus(CClientStatusPacket packet, CallbackInfo ci) {
-        if (packet.getStatus().equals(CClientStatusPacket.State.PERFORM_RESPAWN)) {
+        if (packet.getAction().equals(CClientStatusPacket.State.PERFORM_RESPAWN)) {
             if (player.deathTime < Main.SERVER_CONFIG.respawnCooldown.get()) {
                 ci.cancel();
             }
