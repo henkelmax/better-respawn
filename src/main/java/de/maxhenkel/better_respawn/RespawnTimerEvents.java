@@ -13,6 +13,9 @@ public class RespawnTimerEvents {
         if (event.player.isAlive() || !(event.player instanceof ServerPlayerEntity)) {
             return;
         }
+        if (Main.SERVER_CONFIG.respawnCooldown.get() <= 0) {
+            return;
+        }
         if (event.player.deathTime % 20 == 0) {
             NetUtils.sendTo(Main.SIMPLE_CHANNEL, (ServerPlayerEntity) event.player, new MessageRespawnDelay(Math.max(0, Main.SERVER_CONFIG.respawnCooldown.get() - event.player.deathTime)));
         } else if (event.player.deathTime == Main.SERVER_CONFIG.respawnCooldown.get()) {

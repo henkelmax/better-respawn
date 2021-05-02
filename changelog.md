@@ -1,1 +1,1 @@
-- Updated to official mappings
+- Fixed respawning not working for the first time

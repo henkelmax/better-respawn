@@ -81,7 +81,6 @@ public class RespawnEvents {
         RespawnPosition respawnPosition = player.getCapability(Main.RESPAWN_CAPABILITY).orElse(null);
 
         if (respawnPosition == null) {
-            player.setRespawnPosition(event.getWorld().dimension(), null, 0F, false, false);
             Main.LOGGER.error("Player {} has no respawn location capability", player.getName().getContents());
             return;
         }

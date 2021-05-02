@@ -1,5 +1,6 @@
 package de.maxhenkel.better_respawn.mixins;
 
+import de.maxhenkel.better_respawn.IBetterDeathScreen;
 import de.maxhenkel.better_respawn.Main;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DeathScreen.class)
-public class DeathScreenMixin extends Screen {
+public class DeathScreenMixin extends Screen implements IBetterDeathScreen {
 
     @Shadow
-    protected ITextComponent deathScore;
+    private ITextComponent deathScore;
 
     @Shadow
     private int delayTicker;
@@ -61,6 +62,7 @@ public class DeathScreenMixin extends Screen {
         }
     }
 
+    @Override
     public void setDelay(int delay) {
         this.delay = delay;
     }

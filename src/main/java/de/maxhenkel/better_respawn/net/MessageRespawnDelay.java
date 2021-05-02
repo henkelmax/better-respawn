@@ -1,14 +1,12 @@
 package de.maxhenkel.better_respawn.net;
 
+import de.maxhenkel.better_respawn.IBetterDeathScreen;
 import de.maxhenkel.corelib.net.Message;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.lang.reflect.Method;
 
 public class MessageRespawnDelay implements Message {
 
@@ -30,13 +28,9 @@ public class MessageRespawnDelay implements Message {
     @Override
     public void executeClientSide(NetworkEvent.Context context) {
         Screen s = Minecraft.getInstance().screen;
-        if (s instanceof DeathScreen) {
-            try {
-                Method setDelay = s.getClass().getDeclaredMethod("setDelay", int.class);
-                setDelay.invoke(s, delay);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (s instanceof IBetterDeathScreen) {
+            IBetterDeathScreen deathScreen = (IBetterDeathScreen) s;
+            deathScreen.setDelay(delay);
         }
     }
 
