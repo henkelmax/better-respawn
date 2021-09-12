@@ -1,15 +1,16 @@
 package de.maxhenkel.better_respawn.capabilities;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RespawnPosition {
+public class RespawnPosition implements INBTSerializable<CompoundTag> {
 
     private Map<ResourceLocation, BlockPos> posmap;
 
@@ -21,20 +22,21 @@ public class RespawnPosition {
         posmap = respawnPosition.posmap;
     }
 
-    public BlockPos getPos(World world) {
+    public BlockPos getPos(Level world) {
         return posmap.get(world.dimension().location());
     }
 
-    public void setPos(World world, BlockPos pos) {
+    public void setPos(Level world, BlockPos pos) {
         posmap.put(world.dimension().location(), pos);
     }
 
-    public CompoundNBT toNBT() {
-        CompoundNBT compound = new CompoundNBT();
-        ListNBT spawnList = new ListNBT();
+    @Override
+    public CompoundTag serializeNBT() {
+        CompoundTag compound = new CompoundTag();
+        ListTag spawnList = new ListTag();
         posmap.forEach((dim, pos) -> {
             if (pos != null) {
-                CompoundNBT data = new CompoundNBT();
+                CompoundTag data = new CompoundTag();
                 data.putString("Dim", dim.toString());
                 data.putInt("SpawnX", pos.getX());
                 data.putInt("SpawnY", pos.getY());
@@ -46,9 +48,10 @@ public class RespawnPosition {
         return compound;
     }
 
-    public void fromNBT(CompoundNBT compound) {
-        compound.getList("Spawns", 10).forEach(e -> {
-            CompoundNBT data = (CompoundNBT) e;
+    @Override
+    public void deserializeNBT(CompoundTag nbt) {
+        nbt.getList("Spawns", 10).forEach(e -> {
+            CompoundTag data = (CompoundTag) e;
             posmap.put(new ResourceLocation(data.getString("Dim")), new BlockPos(data.getInt("SpawnX"), data.getInt("SpawnY"), data.getInt("SpawnZ")));
         });
     }

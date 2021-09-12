@@ -2,13 +2,13 @@ package de.maxhenkel.better_respawn.mixins;
 
 import de.maxhenkel.better_respawn.IBetterDeathScreen;
 import de.maxhenkel.better_respawn.Main;
-import net.minecraft.client.gui.screen.DeathScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DeathScreenMixin extends Screen implements IBetterDeathScreen {
 
     @Shadow
-    private ITextComponent deathScore;
+    private Component deathScore;
 
     @Shadow
     private int delayTicker;
@@ -28,13 +28,13 @@ public class DeathScreenMixin extends Screen implements IBetterDeathScreen {
 
     protected int delay;
 
-    protected DeathScreenMixin(ITextComponent titleIn) {
+    protected DeathScreenMixin(Component titleIn) {
         super(titleIn);
     }
 
     @Inject(method = "init", at = @At("RETURN"), cancellable = true)
     public void init(CallbackInfo ci) {
-        respawnButton = (Button) buttons.get(0);
+        respawnButton = (Button) renderables.get(0);
         delay = Main.SERVER_CONFIG.respawnCooldown.get() <= 20 ? 0 : -1;
     }
 
@@ -50,11 +50,11 @@ public class DeathScreenMixin extends Screen implements IBetterDeathScreen {
     @Inject(method = "tick", at = @At("RETURN"), cancellable = true)
     public void tick(CallbackInfo ci) {
         if (delay > 0) {
-            deathScore = new TranslationTextComponent("message.better_respawn.respawn_timer", (delay + 19) / 20);
+            deathScore = new TranslatableComponent("message.better_respawn.respawn_timer", (delay + 19) / 20);
         } else if (delay < 0) {
-            deathScore = new StringTextComponent("");
+            deathScore = new TextComponent("");
         } else {
-            deathScore = (new TranslationTextComponent("deathScreen.score")).append(": ").append((new StringTextComponent(Integer.toString(minecraft.player.getScore()))).withStyle(TextFormatting.YELLOW));
+            deathScore = (new TranslatableComponent("deathScreen.score")).append(": ").append((new TextComponent(Integer.toString(minecraft.player.getScore()))).withStyle(ChatFormatting.YELLOW));
         }
         respawnButton.active = delay <= 0 && delayTicker >= 20;
         if (delay > 0) {

@@ -1,18 +1,19 @@
 package de.maxhenkel.better_respawn.capabilities;
 
 import de.maxhenkel.better_respawn.Main;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SpawnPointCapabilityProvider implements ICapabilitySerializable<CompoundNBT> {
+public class SpawnPointCapabilityProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
-    private RespawnPosition respawnPosition;
+    private final RespawnPosition respawnPosition;
 
     public SpawnPointCapabilityProvider(RespawnPosition respawnPosition) {
         this.respawnPosition = respawnPosition;
@@ -32,12 +33,12 @@ public class SpawnPointCapabilityProvider implements ICapabilitySerializable<Com
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        return respawnPosition.toNBT();
+    public CompoundTag serializeNBT() {
+        return respawnPosition.serializeNBT();
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        respawnPosition.fromNBT(nbt);
+    public void deserializeNBT(CompoundTag nbt) {
+        respawnPosition.deserializeNBT(nbt);
     }
 }

@@ -3,10 +3,10 @@ package de.maxhenkel.better_respawn.net;
 import de.maxhenkel.better_respawn.IBetterDeathScreen;
 import de.maxhenkel.corelib.net.Message;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class MessageRespawnDelay implements Message {
 
@@ -35,13 +35,13 @@ public class MessageRespawnDelay implements Message {
     }
 
     @Override
-    public Message fromBytes(PacketBuffer packetBuffer) {
+    public Message fromBytes(FriendlyByteBuf packetBuffer) {
         delay = packetBuffer.readInt();
         return this;
     }
 
     @Override
-    public void toBytes(PacketBuffer packetBuffer) {
+    public void toBytes(FriendlyByteBuf packetBuffer) {
         packetBuffer.writeInt(delay);
     }
 }

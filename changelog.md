@@ -1,1 +1,1 @@
-- Fixed respawning not working for the first time
+- Updated to 1.17.1
