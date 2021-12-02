@@ -1,9 +1,9 @@
 {
   "required": true,
   "package": "de.maxhenkel.better_respawn.mixins",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "better_respawn.refmap.json",
-  "minVersion": "0.8",
+  "minVersion": "0.8.4",
   "mixins": [
     "DeathScreenMixin",
     "ServerPlayNetHandlerMixin"

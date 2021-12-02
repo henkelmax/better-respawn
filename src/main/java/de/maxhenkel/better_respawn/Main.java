@@ -4,16 +4,15 @@ import de.maxhenkel.better_respawn.capabilities.RespawnPosition;
 import de.maxhenkel.better_respawn.net.MessageRespawnDelay;
 import de.maxhenkel.corelib.CommonRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 
 @Mod(Main.MODID)
 public class Main {
@@ -22,8 +21,8 @@ public class Main {
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    @CapabilityInject(RespawnPosition.class)
-    public static Capability<RespawnPosition> RESPAWN_CAPABILITY;
+    public static Capability<RespawnPosition> RESPAWN_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
     public static SimpleChannel SIMPLE_CHANNEL;
 
