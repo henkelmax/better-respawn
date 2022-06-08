@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,11 +48,11 @@ public class DeathScreenMixin extends Screen implements IBetterDeathScreen {
     @Inject(method = "tick", at = @At("RETURN"), cancellable = true)
     public void tick(CallbackInfo ci) {
         if (delay > 0) {
-            deathScore = new TranslatableComponent("message.better_respawn.respawn_timer", (delay + 19) / 20);
+            deathScore = Component.translatable("message.better_respawn.respawn_timer", (delay + 19) / 20);
         } else if (delay < 0) {
-            deathScore = new TextComponent("");
+            deathScore = Component.empty();
         } else {
-            deathScore = (new TranslatableComponent("deathScreen.score")).append(": ").append((new TextComponent(Integer.toString(minecraft.player.getScore()))).withStyle(ChatFormatting.YELLOW));
+            deathScore = (Component.translatable("deathScreen.score")).append(": ").append((Component.literal(Integer.toString(minecraft.player.getScore()))).withStyle(ChatFormatting.YELLOW));
         }
         respawnButton.active = delay <= 0 && delayTicker >= 20;
         if (delay > 0) {
