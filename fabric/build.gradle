@@ -44,19 +44,6 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
 
-    Set<String> apiModules = [
-            "fabric-api-base",
-            "fabric-resource-loader-v0",
-            "fabric-lifecycle-events-v1",
-            "fabric-key-binding-api-v1",
-            "fabric-networking-api-v1",
-            "fabric-screen-api-v1"
-    ]
-
-    apiModules.forEach {
-        include(modImplementation(fabricApi.module(it, fabric_version)))
-    }
-
     implementation project(':common')
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
