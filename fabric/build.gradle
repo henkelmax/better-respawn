@@ -113,6 +113,10 @@ tasks.modrinth.configure({
     group = 'upload'
 })
 
+tasks.modrinthSyncBody.configure({
+    group = 'upload'
+})
+
 modrinth {
     token = file("${rootDir}/modrinth_token.txt").exists() ? file("${rootDir}/modrinth_token.txt").text : ''
     projectId = modrinth_id
