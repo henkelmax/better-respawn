@@ -1,0 +1,4 @@
+- Ported to Fabric
+- Removed client side options
+- Fixed respawn anchor behavior
+- Fix respawning in other dimensions
