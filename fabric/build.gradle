@@ -149,7 +149,7 @@ forgeUpdate {
 shadowJar {
     configurations = [project.configurations.shadow]
     classifier 'shadow-dev'
-    relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
+    relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.betterrespawn.configbuilder"
 }
 
 prepareRemapJar {

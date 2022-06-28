@@ -191,7 +191,7 @@ jar.finalizedBy('reobfJar')
 shadowJar {
     configurations = [project.configurations.shadow]
     classifier ''
-    relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.${mod_id}.configbuilder"
+    relocate 'de.maxhenkel.configbuilder', "de.maxhenkel.betterrespawn.configbuilder"
 }
 
 reobf {
