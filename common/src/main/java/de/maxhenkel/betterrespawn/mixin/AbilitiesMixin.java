@@ -2,7 +2,7 @@ package de.maxhenkel.betterrespawn.mixin;
 
 import de.maxhenkel.betterrespawn.RespawnAbilities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +57,7 @@ public class AbilitiesMixin implements RespawnAbilities {
         if (abilities.contains("better_respawn")) {
             CompoundTag betterRespawn = abilities.getCompound("better_respawn");
             if (betterRespawn.contains("respawn_dimension")) {
-                respawnDimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(betterRespawn.getString("respawn_level")));
+                respawnDimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(betterRespawn.getString("respawn_level")));
             } else {
                 respawnDimension = Level.OVERWORLD;
             }
