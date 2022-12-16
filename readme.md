@@ -2,9 +2,6 @@
 
 ## Links
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/better-respawn)
-- [ModRepo](https://modrepo.de/minecraft/better_respawn/overview)
-- [GitHub](https://github.com/henkelmax/better-respawn)
-- [FAQ](https://modrepo.de/minecraft/better_respawn/faq)
 - [Credits](https://modrepo.de/minecraft/better_respawn/credits)
 
 ---
