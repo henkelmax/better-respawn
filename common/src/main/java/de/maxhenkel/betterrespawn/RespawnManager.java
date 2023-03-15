@@ -44,7 +44,7 @@ public class RespawnManager {
             Optional<Vec3> respawnVector = Player.findRespawnPositionAndUseSpawnBlock(respawnDimension == null ? player.getLevel() : respawnDimension, respawnLocation, respawnAngle, false, true);
             if (respawnVector.isPresent()) {
                 Vec3 spawn = respawnVector.get();
-                if (respawnDimension == player.getLevel() && player.blockPosition().distManhattan(new Vec3i(spawn.x, spawn.y, spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
+                if (respawnDimension == player.getLevel() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;
                 }
