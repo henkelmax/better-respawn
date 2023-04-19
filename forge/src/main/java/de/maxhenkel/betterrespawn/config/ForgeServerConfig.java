@@ -4,10 +4,6 @@ import de.maxhenkel.configbuilder.Config;
 import de.maxhenkel.configbuilder.ConfigEntry;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ForgeServerConfig extends ServerConfig {
 
     public ForgeServerConfig(ForgeConfigSpec.Builder builder) {
@@ -25,6 +21,16 @@ public class ForgeServerConfig extends ServerConfig {
     public static <T> ConfigEntry<T> wrapConfigEntry(ForgeConfigSpec.ConfigValue<T> configValue) {
         return new ConfigEntry<T>() {
             @Override
+            public ConfigEntry<T> comment(String... comments) {
+                return this;
+            }
+
+            @Override
+            public String[] getComments() {
+                return new String[0];
+            }
+
+            @Override
             public T get() {
                 return configValue.get();
             }
@@ -33,6 +39,11 @@ public class ForgeServerConfig extends ServerConfig {
             public ConfigEntry<T> set(T t) {
                 configValue.set(t);
                 return this;
+            }
+
+            @Override
+            public String getKey() {
+                throw new UnsupportedOperationException("Can't get key of Forge config value");
             }
 
             @Override
@@ -58,21 +69,9 @@ public class ForgeServerConfig extends ServerConfig {
 
             @Override
             public Config getConfig() {
-                return fromBuilder(configValue.next());
+                throw new UnsupportedOperationException("Cannot get config of Forge config value");
             }
         };
     }
 
-    public static Config fromBuilder(ForgeConfigSpec.Builder builder) {
-        Map<String, Object> entries;
-        try {
-            Field field = builder.getClass().getDeclaredField("storage");
-            com.electronwill.nightconfig.core.Config config = (com.electronwill.nightconfig.core.Config) field.get(builder);
-            entries = config.valueMap();
-        } catch (Exception e) {
-            entries = new HashMap<>();
-        }
-        Map<String, Object> finalEntries = entries;
-        return () -> finalEntries;
-    }
 }
