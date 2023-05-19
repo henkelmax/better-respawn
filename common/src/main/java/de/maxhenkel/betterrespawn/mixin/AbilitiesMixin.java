@@ -29,8 +29,10 @@ public class AbilitiesMixin implements RespawnAbilities {
 
         CompoundTag betterRespawn = new CompoundTag();
 
-        betterRespawn.putString("respawn_dimension", respawnDimension.location().toString());
-
+        if (respawnDimension != null) {
+            betterRespawn.putString("respawn_dimension", respawnDimension.location().toString());
+        }
+        
         if (respawnPos != null) {
             CompoundTag pos = new CompoundTag();
             pos.putInt("x", respawnPos.getX());
