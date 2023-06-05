@@ -1,1 +1,1 @@
-- Fixed being able to spawn outside the world border
+- Updated to 1.20
