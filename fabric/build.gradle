@@ -1,24 +1,27 @@
-plugins {
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'mod-update' version '2.0.0'
-}
-
 apply plugin: 'fabric-loom'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'com.modrinth.minotaur'
+apply plugin: 'mod-update'
+apply plugin: 'idea'
 
-sourceCompatibility = JavaLanguageVersion.of(java_version as int)
-targetCompatibility = JavaLanguageVersion.of(java_version as int)
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
 
 archivesBaseName = archives_base_name
 version = mod_version
 group = maven_group
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
+
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
-    mavenLocal()
 }
 
 runClient.doFirst {
@@ -61,16 +64,6 @@ tasks.withType(JavaCompile) {
 
 processResources {
     from("${project(':common').projectDir}/src/main/resources")
-}
-
-java {
-    withSourcesJar()
-}
-
-jar {
-    from('LICENSE') {
-        rename { "${it}_${archivesBaseName}" }
-    }
 }
 
 curseforge {
