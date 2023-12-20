@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BiomeSpawnEvent {
     public static void onWorldLoad(MinecraftServer server, ServerLevel world) {
-        BlockPos spawnPos = null;
+        BlockPos prefferedSpawnPos = null;
 
         try {
             Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
@@ -31,7 +31,7 @@ public class BiomeSpawnEvent {
 
 
                     logInfo("[Biome Spawn Point] The world will now generate.");
-                    world.setDefaultSpawnPos(spawnPos, 1.0f);
+                    world.setDefaultSpawnPos(prefferedSpawnPos, 1.0f);
                 } else {
                     logInfo("[Biome Spawn Point] Spawn biome is not allowed. Choosing a default spawn biome.");
                 }

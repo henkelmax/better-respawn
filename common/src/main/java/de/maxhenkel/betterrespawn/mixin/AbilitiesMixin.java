@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Abilities.class)
-public class AbilitiesMixin implements RespawnAbilities {
+public abstract class AbilitiesMixin implements RespawnAbilities {
 
 
     /** Custom added variables for Hardcore Respawn **/

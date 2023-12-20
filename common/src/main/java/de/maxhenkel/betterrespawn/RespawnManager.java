@@ -57,7 +57,7 @@ public class RespawnManager {
                 Vec3 spawn = respawnVector.get();
                 if (respawnDimension == player.getLevel() && player.blockPosition().distManhattan(new Vec3i(spawn.x, spawn.y, spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
-                     return;
+                    return;
                 }
             }
         }
@@ -175,26 +175,8 @@ public class RespawnManager {
             return false;
         }
 
-        // You can add additional biome checks if needed
-        // For example, you might want to exclude respawn in specific biome categories or temperature ranges
-
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private int getRandomRange(int actual, int minDistance, int maxDistance) {
