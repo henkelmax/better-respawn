@@ -24,4 +24,6 @@ public interface RespawnAbilities {
 
     boolean getRespawnForced();
 
+    long getLastDeathTime();
+
 }

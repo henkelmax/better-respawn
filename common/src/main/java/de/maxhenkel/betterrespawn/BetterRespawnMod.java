@@ -15,6 +15,8 @@ public abstract class BetterRespawnMod {
 
     public void init() {
         RESPAWN_MANAGER = new RespawnManager();
+
+
     }
 
 }

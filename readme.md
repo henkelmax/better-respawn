@@ -1,8 +1,6 @@
-# Better Respawn
+# Better Respawn ![](http://cf.way2muchnoise.eu/full_340907_downloads.svg) ![](http://cf.way2muchnoise.eu/versions/340907.svg)
 
 ## Links
-
-- [Modrinth](https://modrinth.com/mod/better-respawn)
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/better-respawn)
 - [Credits](https://modrepo.de/minecraft/better_respawn/credits)
 

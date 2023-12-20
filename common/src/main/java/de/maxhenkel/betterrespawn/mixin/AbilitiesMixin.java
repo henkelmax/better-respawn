@@ -2,7 +2,7 @@ package de.maxhenkel.betterrespawn.mixin;
 
 import de.maxhenkel.betterrespawn.RespawnAbilities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Abilities.class)
 public class AbilitiesMixin implements RespawnAbilities {
+
+
+    /** Custom added variables for Hardcore Respawn **/
+    private static final String LAST_DEATH_TIME_TAG = "last_death_time";
+    private long lastDeathTime;
+
+    /** **/
 
     private ResourceKey<Level> respawnDimension;
     @Nullable
@@ -44,7 +51,14 @@ public class AbilitiesMixin implements RespawnAbilities {
         betterRespawn.putFloat("respawn_angle", respawnAngle);
         betterRespawn.putBoolean("respawn_forced", respawnForced);
 
+
         abilities.put("better_respawn", betterRespawn);
+
+        // Save the last death timestamp
+        compoundTag.putLong(LAST_DEATH_TIME_TAG, lastDeathTime);
+
+
+
     }
 
     @Inject(method = "loadSaveData", at = @At(value = "RETURN"))
@@ -57,7 +71,7 @@ public class AbilitiesMixin implements RespawnAbilities {
         if (abilities.contains("better_respawn")) {
             CompoundTag betterRespawn = abilities.getCompound("better_respawn");
             if (betterRespawn.contains("respawn_dimension")) {
-                respawnDimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(betterRespawn.getString("respawn_level")));
+                respawnDimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(betterRespawn.getString("respawn_level")));
             } else {
                 respawnDimension = Level.OVERWORLD;
             }
@@ -83,6 +97,14 @@ public class AbilitiesMixin implements RespawnAbilities {
             respawnAngle = 0F;
             respawnForced = false;
         }
+
+        // Load the last death timestamp
+        if (abilities.contains(LAST_DEATH_TIME_TAG)) {
+            lastDeathTime = abilities.getLong(LAST_DEATH_TIME_TAG);
+        } else {
+            lastDeathTime = 0L;
+        }
+
     }
 
 
@@ -124,5 +146,10 @@ public class AbilitiesMixin implements RespawnAbilities {
     @Override
     public boolean getRespawnForced() {
         return respawnForced;
+    }
+
+    @Override
+    public long getLastDeathTime() {
+        return lastDeathTime;
     }
 }
