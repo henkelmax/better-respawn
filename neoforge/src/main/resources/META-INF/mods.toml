@@ -1,24 +1,24 @@
-modLoader="javafml"
-loaderVersion="${loader_version}"
-license="All rights reserved"
-issueTrackerURL="https://github.com/henkelmax/better-respawn"
-displayURL="https://modrepo.de/minecraft/better_respawn"
-authors="${mod_vendor}"
+modLoader = "javafml"
+loaderVersion = "*"
+license = "All rights reserved"
+issueTrackerURL = "https://github.com/henkelmax/better-respawn"
 [[mods]]
-modId="${mod_id}"
-version="${mod_version}"
-displayName="${mod_name}"
-updateJSONURL="https://maxhenkel.de/update/better_respawn.json"
-description='''This mod adds a mechanic that lets you respawn near your death location'''
-[[dependencies.${mod_id}]]
-    modId="neoforge"
-    mandatory=true
-    versionRange="${neoforge_version_range}"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.${mod_id}]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[${minecraft_version}]"
-    ordering="NONE"
-    side="BOTH"
+modId = "better_respawn"
+version = "${mod_version}"
+displayName = "Better Respawn"
+updateJSONURL = "https://update.maxhenkel.de/neoforge/better_respawn"
+displayURL = "https://modrepo.de/minecraft/better_respawn"
+authors = "Max Henkel"
+description = '''This mod adds a mechanic that lets you respawn near your death location'''
+[[dependencies.better_respawn]]
+modId = "neoforge"
+mandatory = true
+versionRange = "${neoforge_dependency}"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.better_respawn]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version}]"
+ordering = "NONE"
+side = "BOTH"
