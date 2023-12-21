@@ -11,7 +11,10 @@ public class FabricBetterRespawnMod extends BetterRespawnMod implements ModIniti
     public void onInitialize() {
         init();
 
-        SERVER_CONFIG = ConfigBuilder.build(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("%s.properties".formatted(MODID)), true, FabricServerConfig::new);
+        SERVER_CONFIG = ConfigBuilder
+                .builder(FabricServerConfig::new)
+                .path(FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve("%s.properties".formatted(MODID)))
+                .build();
     }
 
 }

@@ -1,7 +1,7 @@
 package de.maxhenkel.betterrespawn.config;
 
 import de.maxhenkel.configbuilder.Config;
-import de.maxhenkel.configbuilder.ConfigEntry;
+import de.maxhenkel.configbuilder.entry.ConfigEntry;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ForgeServerConfig extends ServerConfig {
