@@ -8,6 +8,7 @@ version = "${mod_version}"
 displayName = "Better Respawn"
 updateJSONURL = "https://update.maxhenkel.de/neoforge/better_respawn"
 displayURL = "https://modrepo.de/minecraft/better_respawn"
+logoFile = "icon.png"
 authors = "Max Henkel"
 description = '''This mod adds a mechanic that lets you respawn near your death location'''
 [[dependencies.better_respawn]]
