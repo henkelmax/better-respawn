@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "better_respawn",
   "version": "${mod_version}",
-  "name": "${mod_name}",
+  "name": "Better Respawn",
   "description": "This mod adds a mechanic that lets you respawn near your death location",
   "authors": [
-    "${mod_vendor}"
+    "Max Henkel"
   ],
   "contact": {
     "homepage": "https://modrepo.de/minecraft/better_respawn",
@@ -24,8 +24,8 @@
     "better_respawn.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": "${minecraft_dependency}",
+    "fabricloader": "${fabric_loader_dependency}",
+    "minecraft": "${minecraft_version}",
     "java": ">=${java_version}"
   }
 }

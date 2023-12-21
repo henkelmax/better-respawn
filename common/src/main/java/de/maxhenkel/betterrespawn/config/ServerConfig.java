@@ -1,6 +1,6 @@
 package de.maxhenkel.betterrespawn.config;
 
-import de.maxhenkel.configbuilder.ConfigEntry;
+import de.maxhenkel.configbuilder.entry.ConfigEntry;
 
 public abstract class ServerConfig {
 

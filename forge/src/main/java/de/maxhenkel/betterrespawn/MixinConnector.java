@@ -7,7 +7,7 @@ public class MixinConnector implements IMixinConnector {
 
     @Override
     public void connect() {
-        Mixins.addConfiguration("assets/%s/%s.mixins.json".formatted(BetterRespawnMod.MODID, BetterRespawnMod.MODID));
+        Mixins.addConfiguration("better_respawn.mixins.json");
     }
 
 }
