@@ -1,11 +1,11 @@
 package de.maxhenkel.betterrespawn;
 
 import de.maxhenkel.betterrespawn.config.ForgeServerConfig;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.function.Function;
@@ -13,8 +13,8 @@ import java.util.function.Function;
 @Mod(BetterRespawnMod.MODID)
 public class ForgeBetterRespawnMod extends BetterRespawnMod {
 
-    public ForgeBetterRespawnMod() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    public ForgeBetterRespawnMod(IEventBus eventBus) {
+        eventBus.addListener(this::commonSetup);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
