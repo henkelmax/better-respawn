@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -161,9 +162,15 @@ public class RespawnManager {
 
         // Add the names of the biomes you want to exclude from respawn here
         List<String> excludedBiomes = Arrays.asList(
-                "minecraft:bamboo_jungle", "minecraft:jungle", "minecraft:sparse_jungle",
-                "minecraft:mangrove_swamp", "minecraft:swamp", "minecraft:cold_ocean",
-                "minecraft:deep_cold_ocean"
+
+                Biomes.JUNGLE.toString(),
+                Biomes.SPARSE_JUNGLE.toString(),
+                Biomes.BAMBOO_JUNGLE.toString(),
+                Biomes.SWAMP.toString(),
+                Biomes.MANGROVE_SWAMP.toString(),
+                Biomes.COLD_OCEAN.toString(),
+                Biomes.DEEP_COLD_OCEAN.toString()
+
         );
 
         Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);

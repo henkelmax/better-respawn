@@ -13,7 +13,8 @@ public abstract class BetterRespawnMod {
     public static ServerConfig SERVER_CONFIG;
     public static RespawnManager RESPAWN_MANAGER;
 
-    public void init() {
+    public void init()
+    {
         RESPAWN_MANAGER = new RespawnManager();
 
 
