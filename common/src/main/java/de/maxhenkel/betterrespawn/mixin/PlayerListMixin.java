@@ -9,10 +9,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerList.class)
-public abstract class PlayerListMixin {
+public abstract class PlayerListMixin
+{
 
     @Inject(method = "respawn", at = @At(value = "RETURN"))
-    private void respawn(ServerPlayer player, boolean fromEnd, CallbackInfoReturnable<ServerPlayer> ci) {
+    private void respawn(ServerPlayer player, boolean fromEnd, CallbackInfoReturnable<ServerPlayer> ci)
+    {
         ServerPlayer newPlayer = ci.getReturnValue();
 
         if (!(player.getAbilities() instanceof RespawnAbilities abilities)) {

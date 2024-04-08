@@ -4,6 +4,7 @@ import de.maxhenkel.betterrespawn.BetterRespawnMod;
 import de.maxhenkel.betterrespawn.util.BiomeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +18,7 @@ public class BiomeSpawnEvent {
         BlockPos prefferedSpawnPos = null;
 
         try {
-            Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+            Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registries.BIOME);
             List<Biome> restrictedBiomes = BiomeUtils.getSpawnBiomeObjects(biomeRegistry);
 
             logInfo("[Biome Spawn Point] No restricted biomes specified.");

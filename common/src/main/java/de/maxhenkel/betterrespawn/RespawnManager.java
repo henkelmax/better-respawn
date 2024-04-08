@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.PlayerRespawnLogic;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -42,6 +44,8 @@ public class RespawnManager {
             return;
         }
 
+
+
         respawnAbilities.setRespawnDimension(player.getRespawnDimension());
         respawnAbilities.setRespawnPos(player.getRespawnPosition());
         respawnAbilities.setRespawnAngle(player.getRespawnAngle());
@@ -53,38 +57,69 @@ public class RespawnManager {
         float respawnAngle = player.getRespawnAngle();
 
         if (respawnLocation != null) {
-            Optional<Vec3> respawnVector = Player.findRespawnPositionAndUseSpawnBlock(respawnDimension == null ? player.getLevel() : respawnDimension, respawnLocation, respawnAngle, false, true);
+            Optional<Vec3> respawnVector = Player.findRespawnPositionAndUseSpawnBlock(respawnDimension == null ? player.serverLevel() : respawnDimension, respawnLocation, respawnAngle, false, true);
             if (respawnVector.isPresent()) {
                 Vec3 spawn = respawnVector.get();
-                if (respawnDimension == player.getLevel() && player.blockPosition().distManhattan(new Vec3i(spawn.x, spawn.y, spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
+                if (respawnDimension == player.level() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;
                 }
             }
         }
 
-        if (player.getLevel().dimensionType().hasCeiling() || !player.getLevel().dimensionType().bedWorks()) {
-            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.getLevel().dimension().location());
+        if (player.level().dimensionType().hasCeiling() || !player.level().dimensionType().bedWorks()) {
+            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.level().dimension().location());
             return;
         }
 
-        BlockPos respawnPos = findValidRespawnLocation(player.getLevel(), player.blockPosition());
+        BlockPos respawnPos = findValidRespawnLocation(player.serverLevel(), player.blockPosition());
 
         if (respawnPos == null) {
             return;
         }
 
-        player.setRespawnPosition(player.level.dimension(), respawnPos, 0F, true, true);
+
+        player.setRespawnPosition(player.level().dimension(), respawnPos, 0F, true, true);
         BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
+
+
     }
 
-    public void onSetRespawnPosition(ServerPlayer player, ResourceKey<Level> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean showMessage) {
-        if (forced) {
+    public void onSetRespawnPosition(ServerPlayer player, ResourceKey<Level> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean showMessage)
+    {
+        if (forced)
+        {
             return;
         }
 
-        if (!(player.getAbilities() instanceof RespawnAbilities abilities)) {
+
+
+        if (!(player.getAbilities() instanceof RespawnAbilities abilities))
+        {
             return;
+        }
+
+
+
+
+
+
+        if (pos == null)
+        {
+            dimension = Level.OVERWORLD;
+        }
+
+        abilities.setRespawnDimension(dimension);
+        abilities.setRespawnPos(pos);
+        abilities.setRespawnAngle(angle);
+        abilities.setRespawnForced(forced);
+
+        if (pos != null) {
+            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}",
+                    player.getName().getString(), pos.getX(), pos.getY(), pos.getZ(), dimension.location());
+        } else {
+            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [NONE]",
+                    player.getName().getString());
         }
 
         /** Harcore respawn custom logic **/
@@ -105,20 +140,6 @@ public class RespawnManager {
         /** **/
 
 
-        if (pos == null) {
-            dimension = Level.OVERWORLD;
-        }
-
-        abilities.setRespawnDimension(dimension);
-        abilities.setRespawnPos(pos);
-        abilities.setRespawnAngle(angle);
-        abilities.setRespawnForced(forced);
-
-        if (pos != null) {
-            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), pos.getX(), pos.getY(), pos.getZ(), dimension.location());
-        } else {
-            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [NONE]", player.getName().getString());
-        }
     }
 
 
@@ -173,10 +194,10 @@ public class RespawnManager {
 
         );
 
-        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registries.BIOME);
 
         // Check if the biome's registry name is in the excluded list
-        ResourceLocation biomeRegistryName = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome);
+        ResourceLocation biomeRegistryName = world.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
         if (biomeRegistryName != null && excludedBiomes.contains(biomeRegistryName.toString())) {
             BetterRespawnMod.LOGGER.info("Biome {} is excluded from respawn", biomeRegistryName);
             return false;
