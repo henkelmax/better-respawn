@@ -2,7 +2,6 @@ package de.maxhenkel.betterrespawn;
 
 import de.maxhenkel.betterrespawn.config.RespawnLocationConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
@@ -44,8 +43,6 @@ public class RespawnManager {
             return;
         }
 
-
-
         respawnAbilities.setRespawnDimension(player.getRespawnDimension());
         respawnAbilities.setRespawnPos(player.getRespawnPosition());
         respawnAbilities.setRespawnAngle(player.getRespawnAngle());
@@ -78,7 +75,6 @@ public class RespawnManager {
             return;
         }
 
-
         player.setRespawnPosition(player.level().dimension(), respawnPos, 0F, true, true);
         BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
 
@@ -92,17 +88,10 @@ public class RespawnManager {
             return;
         }
 
-
-
         if (!(player.getAbilities() instanceof RespawnAbilities abilities))
         {
             return;
         }
-
-
-
-
-
 
         if (pos == null)
         {
@@ -122,8 +111,22 @@ public class RespawnManager {
                     player.getName().getString());
         }
 
-        /** Harcore respawn custom logic **/
 
+
+        if (pos != null && Objects.requireNonNull(player.getServer()).overworld().getBlockState(pos).getBlock() instanceof BedBlock) {
+            // Player set respawn location to a bed, do not execute custom respawn logic
+            return;
+        }
+
+        this.checkRecentRespawn(player);
+
+
+
+    }
+
+
+    /** Harcore respawn custom logic **/
+    private void checkRecentRespawn(ServerPlayer player) {
         // Check if the player died within the last 15 minutes
         long lastDeathTime = lastDeathTimes.getOrDefault(player.getUUID(), 0L);
         long currentTime = System.currentTimeMillis();
@@ -136,13 +139,41 @@ public class RespawnManager {
 
         // Store the timestamp of the player's death
         lastDeathTimes.put(player.getUUID(), System.currentTimeMillis());
-
-        /** **/
-
-
     }
 
 
+
+
+
+    private boolean isAllowedBiome(ServerLevel world, BlockPos pos) {
+        Biome biome = world.getBiome(pos).value();
+
+        // Add the names of the biomes you want to exclude from respawn here
+        List<String> excludedBiomes = Arrays.asList(
+
+                Biomes.JUNGLE.toString(),
+                Biomes.SPARSE_JUNGLE.toString(),
+                Biomes.BAMBOO_JUNGLE.toString(),
+                Biomes.SWAMP.toString(),
+                Biomes.MANGROVE_SWAMP.toString(),
+                Biomes.COLD_OCEAN.toString(),
+                Biomes.DEEP_COLD_OCEAN.toString()
+
+        );
+
+        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registries.BIOME);
+
+        // Check if the biome's registry name is in the excluded list
+        ResourceLocation biomeRegistryName = world.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
+        if (biomeRegistryName != null && excludedBiomes.contains(biomeRegistryName.toString())) {
+            BetterRespawnMod.LOGGER.info("Biome {} is excluded from respawn", biomeRegistryName);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**     **/
 
     @Nullable
     public BlockPos findValidRespawnLocation(ServerLevel world, BlockPos deathLocation) {
@@ -176,34 +207,6 @@ public class RespawnManager {
         }
 
         return pos;
-    }
-
-    private boolean isAllowedBiome(ServerLevel world, BlockPos pos) {
-        Biome biome = world.getBiome(pos).value();
-
-        // Add the names of the biomes you want to exclude from respawn here
-        List<String> excludedBiomes = Arrays.asList(
-
-                Biomes.JUNGLE.toString(),
-                Biomes.SPARSE_JUNGLE.toString(),
-                Biomes.BAMBOO_JUNGLE.toString(),
-                Biomes.SWAMP.toString(),
-                Biomes.MANGROVE_SWAMP.toString(),
-                Biomes.COLD_OCEAN.toString(),
-                Biomes.DEEP_COLD_OCEAN.toString()
-
-        );
-
-        Registry<Biome> biomeRegistry = world.registryAccess().registryOrThrow(Registries.BIOME);
-
-        // Check if the biome's registry name is in the excluded list
-        ResourceLocation biomeRegistryName = world.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
-        if (biomeRegistryName != null && excludedBiomes.contains(biomeRegistryName.toString())) {
-            BetterRespawnMod.LOGGER.info("Biome {} is excluded from respawn", biomeRegistryName);
-            return false;
-        }
-
-        return true;
     }
 
 
