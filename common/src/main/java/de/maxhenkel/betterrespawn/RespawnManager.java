@@ -6,13 +6,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.PlayerRespawnLogic;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.Random;
 
 public class RespawnManager {
@@ -38,12 +37,11 @@ public class RespawnManager {
 
         ServerLevel respawnDimension = player.getServer().getLevel(player.getRespawnDimension());
         BlockPos respawnLocation = player.getRespawnPosition();
-        float respawnAngle = player.getRespawnAngle();
 
         if (respawnLocation != null) {
-            Optional<Vec3> respawnVector = Player.findRespawnPositionAndUseSpawnBlock(respawnDimension == null ? player.serverLevel() : respawnDimension, respawnLocation, respawnAngle, false, true);
-            if (respawnVector.isPresent()) {
-                Vec3 spawn = respawnVector.get();
+            DimensionTransition transition = player.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+            if (!transition.missingRespawnBlock()) {
+                Vec3 spawn = transition.pos();
                 if (respawnDimension == player.serverLevel() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;

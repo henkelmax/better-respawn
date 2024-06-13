@@ -57,7 +57,7 @@ public class AbilitiesMixin implements RespawnAbilities {
         if (abilities.contains("better_respawn")) {
             CompoundTag betterRespawn = abilities.getCompound("better_respawn");
             if (betterRespawn.contains("respawn_dimension")) {
-                respawnDimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(betterRespawn.getString("respawn_level")));
+                respawnDimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(betterRespawn.getString("respawn_level")));
             } else {
                 respawnDimension = Level.OVERWORLD;
             }
