@@ -1,1 +1,1 @@
-MixinConnector: de.maxhenkel.betterrespawn.MixinConnector
+MixinConfigs: better_respawn.mixins.json
