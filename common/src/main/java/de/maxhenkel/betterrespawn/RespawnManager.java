@@ -49,11 +49,6 @@ public class RespawnManager {
             }
         }
 
-        if (player.serverLevel().dimensionType().hasCeiling() || !player.serverLevel().dimensionType().bedWorks()) {
-            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.serverLevel().dimension().location());
-            return;
-        }
-
         BlockPos respawnPos = findValidRespawnLocation(player.serverLevel(), player.blockPosition());
 
         if (respawnPos == null) {
