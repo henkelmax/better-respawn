@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -39,9 +39,9 @@ public class RespawnManager {
         BlockPos respawnLocation = player.getRespawnPosition();
 
         if (respawnLocation != null) {
-            DimensionTransition transition = player.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+            TeleportTransition transition = player.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
             if (!transition.missingRespawnBlock()) {
-                Vec3 spawn = transition.pos();
+                Vec3 spawn = transition.position();
                 if (respawnDimension == player.serverLevel() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;
