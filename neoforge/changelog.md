@@ -1,1 +1,2 @@
-- Updated to 1.21.4
+- Updated to 1.21.5
+- Fixed respawn anchor being used twice

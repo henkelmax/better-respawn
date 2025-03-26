@@ -1,11 +1,7 @@
 package de.maxhenkel.betterrespawn.mixin;
 
 import de.maxhenkel.betterrespawn.BetterRespawnMod;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,8 +16,8 @@ public class ServerPlayerMixin {
     }
 
     @Inject(method = "setRespawnPosition", at = @At("HEAD"))
-    public void setRespawnPosition(ResourceKey<Level> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean showMessage, CallbackInfo ci) {
-        BetterRespawnMod.RESPAWN_MANAGER.onSetRespawnPosition((ServerPlayer) ((Object) this), dimension, pos, angle, forced, showMessage);
+    public void setRespawnPosition(ServerPlayer.RespawnConfig respawnConfig, boolean showMessage, CallbackInfo ci) {
+        BetterRespawnMod.RESPAWN_MANAGER.onSetRespawnPosition((ServerPlayer) ((Object) this), respawnConfig, showMessage);
     }
 
 }

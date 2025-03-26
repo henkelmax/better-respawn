@@ -5,124 +5,76 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
+
 @Mixin(Abilities.class)
 public class AbilitiesMixin implements RespawnAbilities {
 
-    private ResourceKey<Level> respawnDimension;
+    @Unique
     @Nullable
-    private BlockPos respawnPos;
-    private float respawnAngle;
-    private boolean respawnForced;
+    private ServerPlayer.RespawnConfig respawnConfig;
 
     @Inject(method = "addSaveData", at = @At(value = "RETURN"))
     private void addSaveData(CompoundTag compoundTag, CallbackInfo ci) {
-        CompoundTag abilities = compoundTag.getCompound("abilities");
-
+        if (respawnConfig == null) {
+            return;
+        }
+        CompoundTag abilities = compoundTag.getCompoundOrEmpty("abilities");
         CompoundTag betterRespawn = new CompoundTag();
 
-        if (respawnDimension != null) {
-            betterRespawn.putString("respawn_dimension", respawnDimension.location().toString());
-        }
+        betterRespawn.putString("respawn_dimension", respawnConfig.dimension().location().toString());
 
-        if (respawnPos != null) {
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", respawnPos.getX());
-            pos.putInt("y", respawnPos.getY());
-            pos.putInt("z", respawnPos.getZ());
-            betterRespawn.put("respawn_pos", pos);
-        }
+        CompoundTag pos = new CompoundTag();
+        pos.putInt("x", respawnConfig.pos().getX());
+        pos.putInt("y", respawnConfig.pos().getY());
+        pos.putInt("z", respawnConfig.pos().getZ());
+        betterRespawn.put("respawn_pos", pos);
 
-        betterRespawn.putFloat("respawn_angle", respawnAngle);
-        betterRespawn.putBoolean("respawn_forced", respawnForced);
+        betterRespawn.putFloat("respawn_angle", respawnConfig.angle());
+        betterRespawn.putBoolean("respawn_forced", respawnConfig.forced());
 
         abilities.put("better_respawn", betterRespawn);
     }
 
     @Inject(method = "loadSaveData", at = @At(value = "RETURN"))
     private void loadSaveData(CompoundTag compoundTag, CallbackInfo ci) {
-        if (!compoundTag.contains("abilities", 10)) {
+        Optional<CompoundTag> optionalAbilities = compoundTag.getCompound("abilities");
+        if (optionalAbilities.isEmpty()) {
             return;
         }
-        CompoundTag abilities = compoundTag.getCompound("abilities");
+        CompoundTag abilities = optionalAbilities.get();
 
-        if (abilities.contains("better_respawn")) {
-            CompoundTag betterRespawn = abilities.getCompound("better_respawn");
-            if (betterRespawn.contains("respawn_dimension")) {
-                respawnDimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(betterRespawn.getString("respawn_level")));
-            } else {
-                respawnDimension = Level.OVERWORLD;
+        respawnConfig = abilities.getCompound("better_respawn").flatMap(tag -> {
+            ResourceKey<Level> respawnDimension = tag.read("respawn_dimension", ResourceKey.codec(Registries.DIMENSION)).orElse(Level.OVERWORLD);
+            Optional<CompoundTag> optionalRespawnPos = tag.getCompound("respawn_pos");
+            if (optionalRespawnPos.isEmpty()) {
+                return Optional.empty();
             }
-            if (betterRespawn.contains("respawn_pos")) {
-                CompoundTag pos = betterRespawn.getCompound("respawn_pos");
-                respawnPos = new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z"));
-            } else {
-                respawnPos = null;
-            }
-            if (betterRespawn.contains("respawn_angle")) {
-                respawnAngle = betterRespawn.getFloat("respawn_angle");
-            } else {
-                respawnAngle = 0F;
-            }
-            if (betterRespawn.contains("respawn_forced")) {
-                respawnForced = betterRespawn.getBoolean("respawn_forced");
-            } else {
-                respawnForced = false;
-            }
-        } else {
-            respawnDimension = Level.OVERWORLD;
-            respawnPos = null;
-            respawnAngle = 0F;
-            respawnForced = false;
-        }
-    }
-
-
-    @Override
-    public void setRespawnDimension(ResourceKey<Level> dimension) {
-        this.respawnDimension = dimension;
+            CompoundTag posTag = optionalRespawnPos.get();
+            BlockPos respawnPos = new BlockPos(posTag.getIntOr("x", 0), posTag.getIntOr("y", 0), posTag.getIntOr("z", 0));
+            float respawnAngle = tag.getFloatOr("respawn_angle", 0F);
+            boolean respawnForced = tag.getBooleanOr("respawn_forced", false);
+            return Optional.of(new ServerPlayer.RespawnConfig(respawnDimension, respawnPos, respawnAngle, respawnForced));
+        }).orElse(null);
     }
 
     @Override
-    public void setRespawnPos(@Nullable BlockPos pos) {
-        this.respawnPos = pos;
+    public void setRespawnConfig(ServerPlayer.RespawnConfig respawnConfig) {
+        this.respawnConfig = respawnConfig;
     }
 
     @Override
-    public void setRespawnAngle(float angle) {
-        this.respawnAngle = angle;
-    }
-
-    @Override
-    public void setRespawnForced(boolean forced) {
-        this.respawnForced = forced;
-    }
-
-    @Override
-    public ResourceKey<Level> getRespawnDimension() {
-        return respawnDimension;
-    }
-
-    @Override
-    public @Nullable BlockPos getRespawnPos() {
-        return respawnPos;
-    }
-
-    @Override
-    public float getRespawnAngle() {
-        return respawnAngle;
-    }
-
-    @Override
-    public boolean getRespawnForced() {
-        return respawnForced;
+    public ServerPlayer.RespawnConfig getRespawnConfig() {
+        return respawnConfig;
     }
 }

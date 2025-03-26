@@ -20,7 +20,7 @@ public class PlayerListMixin {
             return;
         }
 
-        newPlayer.setRespawnPosition(abilities.getRespawnDimension(), abilities.getRespawnPos(), abilities.getRespawnAngle(), abilities.getRespawnForced(), false);
+        newPlayer.setRespawnPosition(abilities.getRespawnConfig(), false);
     }
 
 }
