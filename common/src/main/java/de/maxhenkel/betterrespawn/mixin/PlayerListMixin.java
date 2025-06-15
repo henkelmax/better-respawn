@@ -16,11 +16,11 @@ public class PlayerListMixin {
     private void respawn(ServerPlayer serverPlayer, boolean bl, Entity.RemovalReason removalReason, CallbackInfoReturnable<ServerPlayer> cir) {
         ServerPlayer newPlayer = cir.getReturnValue();
 
-        if (!(serverPlayer.getAbilities() instanceof RespawnAbilities abilities)) {
+        if (!(serverPlayer instanceof RespawnAbilities abilities)) {
             return;
         }
 
-        newPlayer.setRespawnPosition(abilities.getRespawnConfig(), false);
+        newPlayer.setRespawnPosition(abilities.better_respawn$getRespawnConfig(), false);
     }
 
 }

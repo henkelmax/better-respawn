@@ -6,7 +6,6 @@
   "refmap": "better_respawn.refmap.json",
   "mixins": [
     "ServerPlayerMixin",
-    "AbilitiesMixin",
     "PlayerListMixin"
   ],
   "injectors": {

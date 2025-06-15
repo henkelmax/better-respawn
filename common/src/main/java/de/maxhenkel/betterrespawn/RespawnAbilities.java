@@ -5,9 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface RespawnAbilities {
 
-    void setRespawnConfig(@Nullable ServerPlayer.RespawnConfig respawnConfig);
+    void better_respawn$setRespawnConfig(@Nullable ServerPlayer.RespawnConfig respawnConfig);
 
     @Nullable
-    ServerPlayer.RespawnConfig getRespawnConfig();
+    ServerPlayer.RespawnConfig better_respawn$getRespawnConfig();
 
 }

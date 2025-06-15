@@ -23,36 +23,36 @@ public class RespawnManager {
     }
 
     public void onPlayerDeath(ServerPlayer player) {
-        if (!(player.getAbilities() instanceof RespawnAbilities respawnAbilities)) {
+        if (!(player instanceof RespawnAbilities respawnAbilities)) {
             return;
         }
 
         @Nullable ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
-        respawnAbilities.setRespawnConfig(respawnConfig);
+        respawnAbilities.better_respawn$setRespawnConfig(respawnConfig);
 
         if (respawnConfig != null) {
             TeleportTransition transition = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
             if (!transition.missingRespawnBlock()) {
                 Vec3 spawn = transition.position();
-                if (respawnConfig.dimension() == player.serverLevel().dimension() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
+                if (respawnConfig.dimension() == player.level().dimension() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;
                 }
             }
         }
 
-        if (player.serverLevel().dimensionType().hasCeiling() || !player.serverLevel().dimensionType().bedWorks()) {
-            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.serverLevel().dimension().location());
+        if (player.level().dimensionType().hasCeiling() || !player.level().dimensionType().bedWorks()) {
+            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.level().dimension().location());
             return;
         }
 
-        BlockPos respawnPos = findValidRespawnLocation(player.serverLevel(), player.blockPosition());
+        BlockPos respawnPos = findValidRespawnLocation(player.level(), player.blockPosition());
 
         if (respawnPos == null) {
             return;
         }
 
-        player.setRespawnPosition(new ServerPlayer.RespawnConfig(player.serverLevel().dimension(), respawnPos, 0, true), false);
+        player.setRespawnPosition(new ServerPlayer.RespawnConfig(player.level().dimension(), respawnPos, 0, true), false);
         BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
     }
 
@@ -61,11 +61,11 @@ public class RespawnManager {
             return;
         }
 
-        if (!(player.getAbilities() instanceof RespawnAbilities abilities)) {
+        if (!(player instanceof RespawnAbilities abilities)) {
             return;
         }
 
-        abilities.setRespawnConfig(respawnConfig);
+        abilities.better_respawn$setRespawnConfig(respawnConfig);
 
         if (respawnConfig != null) {
             BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), respawnConfig.pos().getX(), respawnConfig.pos().getY(), respawnConfig.pos().getZ(), respawnConfig.dimension().location());
