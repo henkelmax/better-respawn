@@ -16,7 +16,7 @@ public class ForgeBetterRespawnMod extends BetterRespawnMod {
 
     public ForgeBetterRespawnMod(FMLJavaModLoadingContext context) {
         this.context = context;
-        context.getModEventBus().addListener(this::commonSetup);
+        FMLCommonSetupEvent.getBus(context.getModBusGroup()).addListener(this::commonSetup);
     }
 
     public void commonSetup(FMLCommonSetupEvent event) {
