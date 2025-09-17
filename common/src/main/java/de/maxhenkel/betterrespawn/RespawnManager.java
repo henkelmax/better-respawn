@@ -1,12 +1,14 @@
 package de.maxhenkel.betterrespawn;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.PlayerRespawnLogic;
+import net.minecraft.server.level.PlayerSpawnFinder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -34,7 +36,7 @@ public class RespawnManager {
             TeleportTransition transition = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
             if (!transition.missingRespawnBlock()) {
                 Vec3 spawn = transition.position();
-                if (respawnConfig.dimension() == player.level().dimension() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
+                if (respawnConfig.respawnData().dimension() == player.level().dimension() && player.blockPosition().distManhattan(new Vec3i((int) spawn.x, (int) spawn.y, (int) spawn.z)) <= BetterRespawnMod.SERVER_CONFIG.respawnBlockRange.get()) {
                     BetterRespawnMod.LOGGER.info("Player {} is within the range of its respawn block", player.getName().getString());
                     return;
                 }
@@ -52,7 +54,7 @@ public class RespawnManager {
             return;
         }
 
-        player.setRespawnPosition(new ServerPlayer.RespawnConfig(player.level().dimension(), respawnPos, 0, true), false);
+        player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(new GlobalPos(player.level().dimension(), respawnPos), 0F, 0F), true), false);
         BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
     }
 
@@ -68,7 +70,7 @@ public class RespawnManager {
         abilities.better_respawn$setRespawnConfig(respawnConfig);
 
         if (respawnConfig != null) {
-            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), respawnConfig.pos().getX(), respawnConfig.pos().getY(), respawnConfig.pos().getZ(), respawnConfig.dimension().location());
+            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), respawnConfig.respawnData().pos().getX(), respawnConfig.respawnData().pos().getY(), respawnConfig.respawnData().pos().getZ(), respawnConfig.respawnData().dimension().location());
         } else {
             BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [NONE]", player.getName().getString());
         }
@@ -82,7 +84,7 @@ public class RespawnManager {
         BlockPos pos = null;
         for (int i = 0; i < FIND_SPAWN_ATTEMPTS && pos == null; i++) {
             BetterRespawnMod.LOGGER.info("Searching for respawn location - Attempt {}/{}", i + 1, FIND_SPAWN_ATTEMPTS);
-            pos = PlayerRespawnLogic.getSpawnPosInChunk(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))));
+            pos = PlayerSpawnFinder.getSpawnPosInChunk(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))));
             if (pos != null && !world.getWorldBorder().isWithinBounds(pos)) {
                 pos = null;
             }
