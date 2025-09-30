@@ -11,6 +11,8 @@ displayURL = "https://modrepo.de/minecraft/better_respawn"
 logoFile = "icon.png"
 authors = "Max Henkel"
 description = '''This mod adds a mechanic that lets you respawn near your death location'''
+[[mixins]]
+config = "better_respawn.mixins.json"
 [[dependencies.better_respawn]]
 modId = "neoforge"
 type = "required"
