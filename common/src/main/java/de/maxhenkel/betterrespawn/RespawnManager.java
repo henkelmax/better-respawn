@@ -43,8 +43,8 @@ public class RespawnManager {
             }
         }
 
-        if (player.level().dimensionType().hasCeiling() || !player.level().dimensionType().bedWorks()) {
-            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.level().dimension().location());
+        if (player.level().dimensionType().hasCeiling()) {
+            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.level().dimension().identifier());
             return;
         }
 
@@ -70,7 +70,7 @@ public class RespawnManager {
         abilities.better_respawn$setRespawnConfig(respawnConfig);
 
         if (respawnConfig != null) {
-            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), respawnConfig.respawnData().pos().getX(), respawnConfig.respawnData().pos().getY(), respawnConfig.respawnData().pos().getZ(), respawnConfig.respawnData().dimension().location());
+            BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [{}, {}, {}] in {}", player.getName().getString(), respawnConfig.respawnData().pos().getX(), respawnConfig.respawnData().pos().getY(), respawnConfig.respawnData().pos().getZ(), respawnConfig.respawnData().dimension().identifier());
         } else {
             BetterRespawnMod.LOGGER.info("Updating the respawn location of player {} to [NONE]", player.getName().getString());
         }
