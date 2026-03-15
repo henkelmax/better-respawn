@@ -84,7 +84,7 @@ public class RespawnManager {
         BlockPos pos = null;
         for (int i = 0; i < FIND_SPAWN_ATTEMPTS && pos == null; i++) {
             BetterRespawnMod.LOGGER.info("Searching for respawn location - Attempt {}/{}", i + 1, FIND_SPAWN_ATTEMPTS);
-            pos = PlayerSpawnFinder.getSpawnPosInChunk(world, new ChunkPos(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))));
+            pos = PlayerSpawnFinder.getSpawnPosInChunk(world, ChunkPos.containing(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))));
             if (pos != null && !world.getWorldBorder().isWithinBounds(pos)) {
                 pos = null;
             }
