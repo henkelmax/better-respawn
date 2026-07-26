@@ -15,10 +15,12 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class RespawnManager {
 
     private static final int FIND_SPAWN_ATTEMPTS = 16;
+    private static final long MAX_SEARCH_WAIT_NANOS = TimeUnit.SECONDS.toNanos(5L);
 
     private final Random random;
 
@@ -68,7 +70,8 @@ public class RespawnManager {
 
         respawnAbilities.better_respawn$setRespawnSearch(null);
         // The search usually finishes while the player is still on the death screen, so this rarely has to wait
-        player.level().getServer().managedBlock(search::isDone);
+        long timeout = System.nanoTime() + MAX_SEARCH_WAIT_NANOS;
+        player.level().getServer().managedBlock(() -> search.isDone() || System.nanoTime() >= timeout);
     }
 
     public void onSetRespawnPosition(ServerPlayer player, @Nullable ServerPlayer.RespawnConfig respawnConfig, boolean showMessage) {
