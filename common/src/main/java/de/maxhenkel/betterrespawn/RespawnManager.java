@@ -106,7 +106,7 @@ public class RespawnManager {
         BlockPos searchOrigin = getRandomSearchOrigin(level, player.blockPosition());
         BetterRespawnMod.LOGGER.info("Searching for a respawn location around [{}, {}, {}] - Attempt {}/{}", searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ(), attempt, FIND_SPAWN_ATTEMPTS);
         return PlayerSpawnFinder.findSpawn(level, searchOrigin).thenCompose(respawnPos -> {
-            if (player.hasDisconnected()) {
+            if (player.hasDisconnected() || player.isRemoved()) {
                 return CompletableFuture.completedFuture(null);
             }
             BlockPos pos = BlockPos.containing(respawnPos);
