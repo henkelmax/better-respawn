@@ -39,8 +39,8 @@ public class ServerPlayerMixin implements RespawnAbilities {
         cachedRespawnConfig = valueInput.read("better_respawn", ServerPlayer.RespawnConfig.CODEC).orElse(null);
     }
 
-    @Inject(method = "die", at = @At("HEAD"))
-    public void init(CallbackInfo ci) {
+    @Inject(method = "die", at = @At("TAIL"))
+    public void die(CallbackInfo ci) {
         BetterRespawnMod.RESPAWN_MANAGER.onPlayerDeath((ServerPlayer) ((Object) this));
     }
 
