@@ -31,6 +31,11 @@ public class RespawnManager {
             return;
         }
 
+        if (respawnAbilities.better_respawn$getRespawnSearch() != null) {
+            // The player died again without respawning in between - the cached config would be the temporary one
+            return;
+        }
+
         @Nullable ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
         respawnAbilities.better_respawn$setRespawnConfig(respawnConfig);
 
