@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
 import net.minecraft.server.level.PlayerSpawnFinder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class RespawnManager {
 
     private static final int FIND_SPAWN_ATTEMPTS = 16;
-    private static final long MAX_SEARCH_WAIT_NANOS = TimeUnit.SECONDS.toNanos(5L);
+    private static final long MAX_SEARCH_SECONDS = 5L;
 
     private final Random random;
 
@@ -55,23 +56,32 @@ public class RespawnManager {
         respawnAbilities.better_respawn$setRespawnSearch(searchRespawnLocation(player, player.level(), 1).exceptionally(throwable -> {
             BetterRespawnMod.LOGGER.error("Failed to find a respawn location for player {}", player.getName().getString(), throwable);
             return null;
-        }));
+        }).completeOnTimeout(null, MAX_SEARCH_SECONDS, TimeUnit.SECONDS));
     }
 
-    public void awaitRespawnSearch(ServerPlayer player) {
+    /**
+     * @return <code>true</code> if the packet was deferred until the respawn location search finished and must not be handled yet
+     */
+    public boolean deferRespawn(ServerPlayer player, ServerboundClientCommandPacket packet) {
+        if (packet.getAction() != ServerboundClientCommandPacket.Action.PERFORM_RESPAWN) {
+            return false;
+        }
+
         if (!(player instanceof RespawnAbilities respawnAbilities)) {
-            return;
+            return false;
         }
 
         CompletableFuture<?> search = respawnAbilities.better_respawn$getRespawnSearch();
-        if (search == null) {
-            return;
+        if (search == null || search.isDone()) {
+            return false;
         }
 
-        respawnAbilities.better_respawn$setRespawnSearch(null);
-        // The search usually finishes while the player is still on the death screen, so this rarely has to wait
-        long timeout = System.nanoTime() + MAX_SEARCH_WAIT_NANOS;
-        player.level().getServer().managedBlock(() -> search.isDone() || System.nanoTime() >= timeout);
+        search.thenRunAsync(() -> {
+            if (!player.hasDisconnected()) {
+                player.connection.handleClientCommand(packet);
+            }
+        }, player.level().getServer());
+        return true;
     }
 
     public void onSetRespawnPosition(ServerPlayer player, @Nullable ServerPlayer.RespawnConfig respawnConfig, boolean showMessage) {
@@ -96,8 +106,7 @@ public class RespawnManager {
         BlockPos searchOrigin = getRandomSearchOrigin(level, player.blockPosition());
         BetterRespawnMod.LOGGER.info("Searching for a respawn location around [{}, {}, {}] - Attempt {}/{}", searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ(), attempt, FIND_SPAWN_ATTEMPTS);
         return PlayerSpawnFinder.findSpawn(level, searchOrigin).thenCompose(respawnPos -> {
-            if (player.isRemoved()) {
-                // The player disconnected or respawned before the search finished
+            if (player.hasDisconnected()) {
                 return CompletableFuture.completedFuture(null);
             }
             BlockPos pos = BlockPos.containing(respawnPos);
