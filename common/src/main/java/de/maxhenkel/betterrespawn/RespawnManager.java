@@ -116,7 +116,7 @@ public class RespawnManager {
 
     private BlockPos getRandomSearchOrigin(ServerLevel level, BlockPos deathLocation) {
         int min = BetterRespawnMod.SERVER_CONFIG.minRespawnDistance.get();
-        int max = BetterRespawnMod.SERVER_CONFIG.maxRespawnDistance.get();
+        int max = Math.max(BetterRespawnMod.SERVER_CONFIG.maxRespawnDistance.get(), min);
         return level.getWorldBorder().clampToBounds(getRandomRange(deathLocation.getX(), min, max), deathLocation.getY(), getRandomRange(deathLocation.getZ(), min, max));
     }
 
