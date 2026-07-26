@@ -13,8 +13,9 @@ This server side mod adds a mechanic that lets you respawn near your death locat
 ## Features
 
 - The minimum and maximum distance from your death location is configurable.
-- You will still respawn at your bed if you return from the end or if you die in another dimension.
+- You will still respawn at your bed if you return from the end.
 - You will also respawn at your bed/respawn anchor if you are within a certain distance of it (Configurable).
+- If no safe location can be found near your death location, you will respawn at your bed/respawn anchor.
 
 ## Functionality
 

@@ -1,18 +1,20 @@
 package de.maxhenkel.betterrespawn;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.PlayerSpawnFinder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public class RespawnManager {
 
@@ -43,19 +45,25 @@ public class RespawnManager {
             }
         }
 
-        if (player.level().dimensionType().hasCeiling()) {
-            BetterRespawnMod.LOGGER.info("Can't respawn {} in {}", player.getName().getString(), player.level().dimension().identifier());
+        respawnAbilities.better_respawn$setRespawnSearch(searchRespawnLocation(player, player.level(), 1).exceptionally(throwable -> {
+            BetterRespawnMod.LOGGER.error("Failed to find a respawn location for player {}", player.getName().getString(), throwable);
+            return null;
+        }));
+    }
+
+    public void awaitRespawnSearch(ServerPlayer player) {
+        if (!(player instanceof RespawnAbilities respawnAbilities)) {
             return;
         }
 
-        BlockPos respawnPos = findValidRespawnLocation(player.level(), player.blockPosition());
-
-        if (respawnPos == null) {
+        CompletableFuture<?> search = respawnAbilities.better_respawn$getRespawnSearch();
+        if (search == null) {
             return;
         }
 
-        player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(new GlobalPos(player.level().dimension(), respawnPos), 0F, 0F), true), false);
-        BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", respawnPos.getX(), respawnPos.getY(), respawnPos.getZ());
+        respawnAbilities.better_respawn$setRespawnSearch(null);
+        // The search usually finishes while the player is still on the death screen, so this rarely has to wait
+        player.level().getServer().managedBlock(search::isDone);
     }
 
     public void onSetRespawnPosition(ServerPlayer player, @Nullable ServerPlayer.RespawnConfig respawnConfig, boolean showMessage) {
@@ -76,29 +84,44 @@ public class RespawnManager {
         }
     }
 
-    @Nullable
-    public BlockPos findValidRespawnLocation(ServerLevel world, BlockPos deathLocation) {
+    private CompletableFuture<Void> searchRespawnLocation(ServerPlayer player, ServerLevel level, int attempt) {
+        BlockPos searchOrigin = getRandomSearchOrigin(level, player.blockPosition());
+        BetterRespawnMod.LOGGER.info("Searching for a respawn location around [{}, {}, {}] - Attempt {}/{}", searchOrigin.getX(), searchOrigin.getY(), searchOrigin.getZ(), attempt, FIND_SPAWN_ATTEMPTS);
+        return PlayerSpawnFinder.findSpawn(level, searchOrigin).thenCompose(respawnPos -> {
+            BlockPos pos = BlockPos.containing(respawnPos);
+            if (isValidRespawnLocation(level, pos)) {
+                setTemporaryRespawnPosition(player, pos);
+                return CompletableFuture.completedFuture(null);
+            }
+            if (attempt >= FIND_SPAWN_ATTEMPTS) {
+                BetterRespawnMod.LOGGER.info("Found no valid respawn location after {} attempts", FIND_SPAWN_ATTEMPTS);
+                return CompletableFuture.completedFuture(null);
+            }
+            return searchRespawnLocation(player, level, attempt + 1);
+        });
+    }
+
+    private boolean isValidRespawnLocation(ServerLevel level, BlockPos pos) {
+        if (pos.getY() >= level.getMinY() + level.dimensionType().logicalHeight()) {
+            return false;
+        }
+        BlockPos below = pos.below();
+        return Block.isFaceFull(level.getBlockState(below).getCollisionShape(level, below), Direction.UP);
+    }
+
+    private void setTemporaryRespawnPosition(ServerPlayer player, BlockPos pos) {
+        player.setRespawnPosition(new ServerPlayer.RespawnConfig(new LevelData.RespawnData(new GlobalPos(player.level().dimension(), pos), 0F, 0F), true), false);
+        BetterRespawnMod.LOGGER.info("Set temporary respawn location to [{}, {}, {}]", pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private BlockPos getRandomSearchOrigin(ServerLevel level, BlockPos deathLocation) {
         int min = BetterRespawnMod.SERVER_CONFIG.minRespawnDistance.get();
         int max = BetterRespawnMod.SERVER_CONFIG.maxRespawnDistance.get();
-
-        BlockPos pos = null;
-        for (int i = 0; i < FIND_SPAWN_ATTEMPTS && pos == null; i++) {
-            BetterRespawnMod.LOGGER.info("Searching for respawn location - Attempt {}/{}", i + 1, FIND_SPAWN_ATTEMPTS);
-            pos = PlayerSpawnFinder.getSpawnPosInChunk(world, ChunkPos.containing(new BlockPos(getRandomRange(deathLocation.getX(), min, max), 0, getRandomRange(deathLocation.getZ(), min, max))));
-            if (pos != null && !world.getWorldBorder().isWithinBounds(pos)) {
-                pos = null;
-            }
-        }
-        if (pos == null) {
-            BetterRespawnMod.LOGGER.info("Found no valid respawn location after {} attempts", FIND_SPAWN_ATTEMPTS);
-        } else {
-            BetterRespawnMod.LOGGER.info("Found valid respawn location: [{}, {}, {}]", pos.getX(), pos.getY(), pos.getZ());
-        }
-        return pos;
+        return level.getWorldBorder().clampToBounds(getRandomRange(deathLocation.getX(), min, max), deathLocation.getY(), getRandomRange(deathLocation.getZ(), min, max));
     }
 
     private int getRandomRange(int actual, int minDistance, int maxDistance) {
-        return actual + (random.nextBoolean() ? -1 : 1) * (minDistance + random.nextInt(maxDistance - minDistance));
+        return actual + (random.nextBoolean() ? -1 : 1) * random.nextInt(minDistance, maxDistance + 1);
     }
 
 }

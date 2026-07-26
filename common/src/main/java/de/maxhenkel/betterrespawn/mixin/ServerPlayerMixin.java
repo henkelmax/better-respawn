@@ -12,12 +12,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.concurrent.CompletableFuture;
+
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin implements RespawnAbilities {
 
     @Unique
     @Nullable
     private ServerPlayer.RespawnConfig cachedRespawnConfig;
+
+    @Unique
+    @Nullable
+    private CompletableFuture<?> respawnSearch;
 
     @Inject(method = "addAdditionalSaveData", at = @At(value = "RETURN"))
     private void addSaveData(ValueOutput valueOutput, CallbackInfo ci) {
@@ -51,6 +57,16 @@ public class ServerPlayerMixin implements RespawnAbilities {
     @Override
     public ServerPlayer.RespawnConfig better_respawn$getRespawnConfig() {
         return cachedRespawnConfig;
+    }
+
+    @Override
+    public void better_respawn$setRespawnSearch(@Nullable CompletableFuture<?> respawnSearch) {
+        this.respawnSearch = respawnSearch;
+    }
+
+    @Override
+    public CompletableFuture<?> better_respawn$getRespawnSearch() {
+        return respawnSearch;
     }
 
 }

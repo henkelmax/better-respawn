@@ -1,1 +1,2 @@
-- Updated to 26.2
+- Improved respawn mechanics
+- Allow respawning in the Nether
