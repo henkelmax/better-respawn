@@ -20,7 +20,7 @@ public class ForgeBetterRespawnMod extends BetterRespawnMod {
 
     public void commonSetup(FMLCommonSetupEvent event) {
         init();
-        SERVER_CONFIG = registerConfig(ModConfig.Type.SERVER, ForgeServerConfig::new);
+        SERVER_CONFIG = registerConfig(ModConfig.Type.SYNCED, ForgeServerConfig::new);
     }
 
     public static <T> T registerConfig(ModConfig.Type type, Function<ModConfigSpec.Builder, T> consumer) {
